@@ -1,0 +1,21 @@
+{
+  "name": "env-drift",
+  "version": "1.0.0",
+  "description": "Compare .env files across environments: missing keys, differing values, and a .env.example skeleton",
+  "type": "module",
+  "author": "Peter Jedra",
+  "keywords": ["env", "dotenv", "diff", "compare", "environment", "config", "cli", "drift"],
+  "license": "MIT",
+  "bin": {
+    "env-drift": "env-drift.js"
+  },
+  "files": [
+    "env-drift.js"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18.3"
+  }
+}

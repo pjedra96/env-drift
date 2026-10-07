@@ -1,0 +1,4 @@
+node_modules/
+.DS_Store
+# The examples/.env* files are fake demo data and are meant to be committed
+!examples/.env*
