@@ -31,8 +31,8 @@ Same letter = same value. — missing, ∅ empty, · in a template. Values hidde
 
 ## How to read it?
 
-- **Letters** stand for values: the same letter means the same value. `STRIPE_KEY A A B` means
-  dev and staging share a key and production has its own. Your secrets never appear on screen
+- **Letters** stand for values: the same letter means the same value. `NODE_ENV A B B` means
+  .env has its own value and staging and production share one. Your secrets never appear on screen
   unless you ask for them with `--show-values`.
 - `—` the key is missing, `∅` it's set but empty, `·` it's in a template (`.env.example`), where
   only the key matters.
@@ -40,27 +40,23 @@ Same letter = same value. — missing, ∅ empty, · in a template. Values hidde
 
 ## Usage
 
-You need Node 18.3+ (ideally v24). There are a few ways to run it:
+You need Node 18.3 or newer. There are three ways to run it:
 
-- `node env-drift.js` runs it without installing anything.
-- `npm install -g env-drift` gives nn `env-drift` command that can be used anywhere.
-- Or just grab `env-drift.js` and run `node env-drift.js`. It's a single file with no dependencies,
-  so nothing else is needed. If Node complains about `import`, rename it to `env-drift.mjs`.
+- `npx env-drift`: nothing to install
+- `npm install -g env-drift`: gives you an `env-drift` command you can use anywhere
+- copy `env-drift.js` and run `node env-drift.js`: it's a single file with no dependencies.
+  If Node complains about `import`, rename it to `env-drift.mjs`.
 
-Run it from the folder that holds the `.env` files (any project root). It only looks in
-that folder, not in subfolders. If the files are somewhere else, pass their paths instead, which
-works from anywhere:
-
-```sh
-env-drift config/.env config/.env.production
-```
+Run it from the folder that holds the `.env` files (any project root). It only looks in that
+folder, not in subfolders. If the files are somewhere else, pass their paths instead:
 
 ```sh
-node env-drift.js examples\.env examples\.env.production` # If not installed, checks the example env files
-env-drift                              # every .env* file in this folder (if installed)
-env-drift .env .env.production         # just these two (if installed)
-env-drift --keys-only                  # only missing keys; different values are expected
-env-drift --example > .env.example     # skeleton with every key and no values
+env-drift                                      # every .env* file in this folder
+env-drift .env .env.production                 # just these two
+env-drift config/.env config/.env.production   # files in another folder
+env-drift examples/.env examples/.env.production   # try it on the sample files
+env-drift --keys-only                          # only missing keys; different values are expected
+env-drift --example > .env.example             # skeleton with every key and no values
 ```
 
 | Option | Description
@@ -75,36 +71,20 @@ env-drift --example > .env.example     # skeleton with every key and no values
 With no file arguments it picks up `.env`, `.env.*` and `*.env` and orders them dev → test →
 staging → production, with templates (`.example`, `.sample`, `.template`) last.
 
-### On Windows
-
-Everything above works the same in PowerShell or Command Prompt, and both `config/.env` and
-`config\.env` are fine as paths.
-
-One thing to watch out for: in the old Windows PowerShell (5.1, the one that comes with Windows),
-`>` saves files as UTF-16, which most `.env` loaders can't read. So instead of
-`env-drift --example > .env.example`, use:
-
-```powershell
-env-drift --example | Out-File -Encoding utf8 .env.example
-```
-
-Command Prompt and PowerShell 7 don't have this problem.
-
-### Uninstalling
-
-If you installed it with `npm install -g`, remove it with:
-```sh
-npm uninstall -g env-drift
-```
-
-With `npx` there's nothing to uninstall, and if you just copied the file, delete it. env-drift
-never creates any files or settings of its own.
-
 **Exit codes:** `0` every key is in every file, `1` at least one key is missing somewhere,
 `2` usage error. In CI:
 
 ```sh
 npx env-drift .env.example .env.production --keys-only
+```
+
+### On Windows
+
+Paths work with `/` or `\`. In Windows PowerShell 5.1 (the one built into Windows), `>` saves
+files as UTF-16, which most `.env` loaders can't read, so use this instead:
+
+```powershell
+env-drift --example | Out-File -Encoding utf8 .env.example
 ```
 
 ## The `.env.example` skeleton
@@ -125,6 +105,11 @@ Standard dotenv syntax: `KEY=value`, optional `export`, `#` comments (an inline 
 before it, so `URL=https://x/#a` is kept intact), single quotes are literal, double quotes support
 `\n` and `\"`, and quoted values can span several lines. Lines that aren't `KEY=value` are skipped.
 `${VAR}` references are compared as written, not expanded.
+
+## Uninstalling
+
+If you installed it globally, run `npm uninstall -g env-drift`. Otherwise there's nothing to
+remove: env-drift never creates any files or settings of its own.
 
 ## License
 
